@@ -5,24 +5,54 @@ import { motion } from 'framer-motion';
 const ParallaxSection = () => {
   return (
     <section className="py-24 relative overflow-hidden">
-      {/* Background div with parallax effect using framer-motion */}
+      {/* Animated background with parallax effect */}
       <motion.div 
-        className="absolute inset-0 bg-[#3498DB] bg-opacity-20 z-0"
+        className="absolute inset-0 z-0"
         initial={{ y: 0 }}
         animate={{
-          y: [-10, 10, -10]
+          y: [-20, 0, -20]
         }}
         transition={{
           repeat: Infinity,
           duration: 20,
-          ease: "linear"
+          ease: "easeInOut"
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3498DB]/10 to-[#2C3E50]/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#2980B9] via-[#3498DB] to-[#2C3E50]"></div>
       </motion.div>
       
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+      {/* Floating particles for depth */}
+      <div className="absolute inset-0 z-5">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div 
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-white opacity-30"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -10, 0],
+              opacity: [0.2, 0.5, 0.2]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 3 + Math.random() * 5,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Overlay with mesh pattern for texture */}
+      <div 
+        className="absolute inset-0 z-10 bg-black bg-opacity-40"
+        style={{
+          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)`,
+          backgroundSize: `30px 30px`
+        }}
+      ></div>
       
       <div className="container mx-auto px-4 relative z-20">
         <div className="bg-white bg-opacity-90 rounded-lg shadow-xl max-w-3xl mx-auto p-8 lg:p-12 text-center">
@@ -33,16 +63,16 @@ const ParallaxSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
-              asChild
-              className="bg-[#E74C3C] hover:bg-opacity-90 text-white py-3 px-8 rounded-md"
+              onClick={() => window.location.href = '/properties'}
+              className="bg-[#E74C3C] hover:bg-[#d44637] text-white py-3 px-8 rounded-md"
             >
-              <Link href="/properties">Browse Properties</Link>
+              Browse Properties
             </Button>
             <Button 
-              asChild
-              className="bg-[#2C3E50] hover:bg-opacity-90 text-white py-3 px-8 rounded-md"
+              onClick={() => window.location.href = '/contact'}
+              className="bg-[#2C3E50] hover:bg-[#1e2b39] text-white py-3 px-8 rounded-md"
             >
-              <Link href="/contact">Contact An Agent</Link>
+              Contact An Agent
             </Button>
           </div>
         </div>

@@ -22,25 +22,25 @@ const Navbar = () => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <Link href="/">
-            <a className="flex items-center">
-              <span className="font-['Playfair_Display'] text-2xl font-bold text-[#2C3E50]">
-                Nainaland<span className="text-[#E74C3C]">Deals</span>
-              </span>
-            </a>
-          </Link>
+          <div className="flex items-center cursor-pointer" onClick={() => window.location.href = '/'}>
+            <span className="font-['Playfair_Display'] text-2xl font-bold text-[#2C3E50]">
+              Nainaland<span className="text-[#E74C3C]">Deals</span>
+            </span>
+          </div>
           
           <div className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                <a className={`font-medium ${
+              <div 
+                key={link.href}
+                className={`font-medium cursor-pointer ${
                   location === link.href 
                     ? 'text-[#E74C3C]' 
                     : 'text-[#2C3E50] hover:text-[#E74C3C]'
-                } transition-colors`}>
-                  {link.label}
-                </a>
-              </Link>
+                } transition-colors`}
+                onClick={() => window.location.href = link.href}
+              >
+                {link.label}
+              </div>
             ))}
           </div>
           
@@ -58,18 +58,20 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden pt-2 pb-3 space-y-1">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                <a 
-                  className={`block px-3 py-2 rounded-md ${
-                    location === link.href 
-                      ? 'bg-[#ECF0F1] text-[#E74C3C]' 
-                      : 'text-[#2C3E50] hover:bg-[#ECF0F1]'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </a>
-              </Link>
+              <div 
+                key={link.href}
+                className={`block px-3 py-2 rounded-md cursor-pointer ${
+                  location === link.href 
+                    ? 'bg-[#ECF0F1] text-[#E74C3C]' 
+                    : 'text-[#2C3E50] hover:bg-[#ECF0F1]'
+                }`}
+                onClick={() => {
+                  window.location.href = link.href;
+                  setIsOpen(false);
+                }}
+              >
+                {link.label}
+              </div>
             ))}
           </div>
         )}
