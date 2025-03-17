@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import Navbar from '@/components/Navbar';
-import SearchSection from '@/components/SearchSection';
+import AdvancedSearchSection from '@/components/AdvancedSearchSection';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,17 @@ const Properties = () => {
   const [searchParams, setSearchParams] = useState({
     location: '',
     type: '',
+    status: '',
     minPrice: '',
-    maxPrice: ''
+    maxPrice: '',
+    minBedrooms: '',
+    maxBedrooms: '',
+    minBathrooms: '',
+    maxBathrooms: '',
+    minArea: '',
+    maxArea: '',
+    amenities: '',
+    sortBy: ''
   });
   const propertiesPerPage = 6;
   
@@ -27,8 +36,17 @@ const Properties = () => {
     setSearchParams({
       location: params.get('location') || '',
       type: params.get('type') || '',
+      status: params.get('status') || '',
       minPrice: params.get('minPrice') || '',
-      maxPrice: params.get('maxPrice') || ''
+      maxPrice: params.get('maxPrice') || '',
+      minBedrooms: params.get('minBedrooms') || '',
+      maxBedrooms: params.get('maxBedrooms') || '',
+      minBathrooms: params.get('minBathrooms') || '',
+      maxBathrooms: params.get('maxBathrooms') || '',
+      minArea: params.get('minArea') || '',
+      maxArea: params.get('maxArea') || '',
+      amenities: params.get('amenities') || '',
+      sortBy: params.get('sortBy') || ''
     });
   }, [location]);
   
@@ -53,6 +71,13 @@ const Properties = () => {
       return false;
     }
     
+    // Filter by status (if not "all")
+    if (searchParams.status && 
+        searchParams.status !== 'all' && 
+        property.status !== searchParams.status) {
+      return false;
+    }
+    
     // Filter by min price (if set)
     if (searchParams.minPrice && 
         searchParams.minPrice !== 'all' && 
@@ -66,6 +91,45 @@ const Properties = () => {
         property.price > parseInt(searchParams.maxPrice)) {
       return false;
     }
+    
+    // Filter by min bedrooms (if set)
+    if (searchParams.minBedrooms && 
+        property.bedrooms < parseInt(searchParams.minBedrooms)) {
+      return false;
+    }
+    
+    // Filter by max bedrooms (if set)
+    if (searchParams.maxBedrooms && 
+        property.bedrooms > parseInt(searchParams.maxBedrooms)) {
+      return false;
+    }
+    
+    // Filter by min bathrooms (if set)
+    if (searchParams.minBathrooms && 
+        property.bathrooms < parseInt(searchParams.minBathrooms)) {
+      return false;
+    }
+    
+    // Filter by max bathrooms (if set)
+    if (searchParams.maxBathrooms && 
+        property.bathrooms > parseInt(searchParams.maxBathrooms)) {
+      return false;
+    }
+    
+    // Filter by min area (if set)
+    if (searchParams.minArea && 
+        property.area < parseInt(searchParams.minArea)) {
+      return false;
+    }
+    
+    // Filter by max area (if set)
+    if (searchParams.maxArea && 
+        property.area > parseInt(searchParams.maxArea)) {
+      return false;
+    }
+    
+    // For amenities, we'd need to add them to the property model,
+    // but we can leave the filtering logic here for future implementation
     
     return true;
   });
@@ -121,8 +185,8 @@ const Properties = () => {
         </div>
       </div>
       
-      {/* Search Section */}
-      <SearchSection />
+      {/* Advanced Search Section */}
+      <AdvancedSearchSection />
       
       {/* Properties Grid */}
       <section className="py-16 bg-[#ECF0F1]">
@@ -132,7 +196,7 @@ const Properties = () => {
               {filteredProperties ? `${filteredProperties.length} Properties Found` : 'Available Properties'}
             </h2>
             
-            {searchParams.location || searchParams.type || searchParams.minPrice || searchParams.maxPrice ? (
+            {Object.values(searchParams).some(param => param !== '') ? (
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = '/properties'}
