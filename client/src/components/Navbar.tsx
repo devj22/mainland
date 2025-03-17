@@ -11,7 +11,8 @@ const Navbar = () => {
     { href: '/', label: 'Home' },
     { href: '/properties', label: 'Properties' },
     { href: '/blog', label: 'Blog' },
-    { href: '/contact', label: 'Contact' }
+    { href: '/contact', label: 'Contact' },
+    { href: '/user-details', label: 'Your Details' }
   ];
 
   const toggleMenu = () => {

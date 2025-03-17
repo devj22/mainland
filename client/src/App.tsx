@@ -9,6 +9,7 @@ import PropertyDetail from "@/pages/PropertyDetail";
 import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
 import Contact from "@/pages/Contact";
+import UserDetails from "@/pages/UserDetails";
 import Dashboard from "@/pages/admin/Dashboard";
 import PropertyManager from "@/pages/admin/PropertyManager";
 import BlogManager from "@/pages/admin/BlogManager";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:id" component={BlogPost} />
       <Route path="/contact" component={Contact} />
+      <Route path="/user-details" component={UserDetails} />
       
       {/* Admin Routes */}
       <Route path="/admin" component={Dashboard} />
