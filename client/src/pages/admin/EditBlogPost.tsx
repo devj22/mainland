@@ -113,7 +113,7 @@ const EditBlogPost = () => {
           <p className="mb-6">We couldn't find the blog post you're looking for.</p>
           <Button 
             className="bg-[#3498DB]"
-            onClick={() => navigate('/admin/blog')}
+            onClick={() => setLocation('/admin/blog')}
           >
             Back to Blog Posts
           </Button>
@@ -127,7 +127,7 @@ const EditBlogPost = () => {
       <div className="mb-6">
         <Button 
           variant="outline" 
-          onClick={() => navigate('/admin/blog')}
+          onClick={() => setLocation('/admin/blog')}
           className="mb-4 flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -250,7 +250,7 @@ const EditBlogPost = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate('/admin/blog')}
+                  onClick={() => setLocation('/admin/blog')}
                   disabled={mutation.isPending}
                 >
                   Cancel
