@@ -7,10 +7,7 @@ const ParallaxSection = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background div with parallax effect using framer-motion */}
       <motion.div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1445548671936-e3981cf1e702?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80')",
-        }}
+        className="absolute inset-0 bg-[#3498DB] bg-opacity-20 z-0"
         initial={{ y: 0 }}
         animate={{
           y: [-10, 10, -10]
@@ -20,7 +17,9 @@ const ParallaxSection = () => {
           duration: 20,
           ease: "linear"
         }}
-      />
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3498DB]/10 to-[#2C3E50]/30"></div>
+      </motion.div>
       
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
