@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { Search } from 'lucide-react';
 
 const locations = [
-  { value: "", label: "All Locations" },
+  { value: "all", label: "All Locations" },
   { value: "downtown", label: "Downtown" },
   { value: "suburbs", label: "Suburbs" },
   { value: "beachfront", label: "Beachfront" },
@@ -23,7 +23,7 @@ const locations = [
 ];
 
 const propertyTypes = [
-  { value: "", label: "All Types" },
+  { value: "all", label: "All Types" },
   { value: "apartment", label: "Apartment" },
   { value: "house", label: "House" },
   { value: "villa", label: "Villa" },
@@ -31,7 +31,7 @@ const propertyTypes = [
 ];
 
 const priceRanges = [
-  { value: "", label: "Any Price" },
+  { value: "all", label: "Any Price" },
   { value: "0-100000", label: "$0 - $100,000" },
   { value: "100000-250000", label: "$100,000 - $250,000" },
   { value: "250000-500000", label: "$250,000 - $500,000" },
@@ -49,9 +49,9 @@ const SearchSection = () => {
   
   const form = useForm<SearchFormValues>({
     defaultValues: {
-      location: "",
-      propertyType: "",
-      priceRange: ""
+      location: "all",
+      propertyType: "all",
+      priceRange: "all"
     }
   });
 
@@ -60,7 +60,7 @@ const SearchSection = () => {
     let minPrice = '';
     let maxPrice = '';
     
-    if (values.priceRange) {
+    if (values.priceRange && values.priceRange !== 'all') {
       const [min, max] = values.priceRange.split('-');
       minPrice = min;
       maxPrice = max || '';
@@ -68,10 +68,10 @@ const SearchSection = () => {
     
     // Build query string
     const params = new URLSearchParams();
-    if (values.location) params.append('location', values.location);
-    if (values.propertyType) params.append('type', values.propertyType);
-    if (minPrice) params.append('minPrice', minPrice);
-    if (maxPrice) params.append('maxPrice', maxPrice);
+    if (values.location && values.location !== 'all') params.append('location', values.location);
+    if (values.propertyType && values.propertyType !== 'all') params.append('type', values.propertyType);
+    if (minPrice && minPrice !== 'all') params.append('minPrice', minPrice);
+    if (maxPrice && maxPrice !== 'all') params.append('maxPrice', maxPrice);
     
     // Navigate to properties page with search params
     setLocation(`/properties?${params.toString()}`);

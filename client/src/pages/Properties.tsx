@@ -39,23 +39,31 @@ const Properties = () => {
   
   // Filter properties according to search parameters
   const filteredProperties = properties?.filter((property: Property) => {
-    // Filter by location
-    if (searchParams.location && !property.location.toLowerCase().includes(searchParams.location.toLowerCase())) {
+    // Filter by location (if not "all")
+    if (searchParams.location && 
+        searchParams.location !== 'all' && 
+        !property.location.toLowerCase().includes(searchParams.location.toLowerCase())) {
       return false;
     }
     
-    // Filter by type
-    if (searchParams.type && property.type !== searchParams.type) {
+    // Filter by type (if not "all")
+    if (searchParams.type && 
+        searchParams.type !== 'all' && 
+        property.type !== searchParams.type) {
       return false;
     }
     
-    // Filter by min price
-    if (searchParams.minPrice && property.price < parseInt(searchParams.minPrice)) {
+    // Filter by min price (if set)
+    if (searchParams.minPrice && 
+        searchParams.minPrice !== 'all' && 
+        property.price < parseInt(searchParams.minPrice)) {
       return false;
     }
     
-    // Filter by max price
-    if (searchParams.maxPrice && property.price > parseInt(searchParams.maxPrice)) {
+    // Filter by max price (if set)
+    if (searchParams.maxPrice && 
+        searchParams.maxPrice !== 'all' && 
+        property.price > parseInt(searchParams.maxPrice)) {
       return false;
     }
     
