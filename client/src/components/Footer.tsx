@@ -15,18 +15,18 @@ const Footer = () => {
               Your trusted partner in finding premium real estate properties that meet your needs and exceed your expectations.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors">
+              <div className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors cursor-pointer">
                 <FaFacebookF />
-              </a>
-              <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors">
+              </div>
+              <div className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors cursor-pointer">
                 <FaTwitter />
-              </a>
-              <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors">
+              </div>
+              <div className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors cursor-pointer">
                 <FaInstagram />
-              </a>
-              <a href="#" className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors">
+              </div>
+              <div className="bg-white bg-opacity-10 p-2 rounded-full hover:bg-opacity-20 transition-colors cursor-pointer">
                 <FaLinkedinIn />
-              </a>
+              </div>
             </div>
           </div>
           
@@ -34,39 +34,60 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/">
-                  <a className="hover:text-[#E74C3C] transition-colors">Home</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Home
+                </div>
               </li>
               <li>
-                <Link href="/properties">
-                  <a className="hover:text-[#E74C3C] transition-colors">Properties</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/properties'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Properties
+                </div>
               </li>
               <li>
-                <Link href="/#about">
-                  <a className="hover:text-[#E74C3C] transition-colors">About Us</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/#about'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  About Us
+                </div>
               </li>
               <li>
-                <Link href="/blog">
-                  <a className="hover:text-[#E74C3C] transition-colors">Blog</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/blog'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Blog
+                </div>
               </li>
               <li>
-                <Link href="/contact">
-                  <a className="hover:text-[#E74C3C] transition-colors">Contact</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/contact'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Contact
+                </div>
               </li>
               <li>
-                <Link href="/privacy-policy">
-                  <a className="hover:text-[#E74C3C] transition-colors">Privacy Policy</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/privacy-policy'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Privacy Policy
+                </div>
               </li>
               <li>
-                <Link href="/terms-of-service">
-                  <a className="hover:text-[#E74C3C] transition-colors">Terms of Service</a>
-                </Link>
+                <div 
+                  onClick={() => window.location.href = '/terms-of-service'} 
+                  className="hover:text-[#E74C3C] transition-colors cursor-pointer"
+                >
+                  Terms of Service
+                </div>
               </li>
             </ul>
           </div>
@@ -74,13 +95,13 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-4">Property Types</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Residential Properties</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Commercial Properties</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Luxury Villas</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Apartments</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Beach Houses</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Land Plots</a></li>
-              <li><a href="#" className="hover:text-[#E74C3C] transition-colors">Industrial Properties</a></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Residential Properties</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Commercial Properties</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Luxury Villas</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Apartments</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Beach Houses</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Land Plots</div></li>
+              <li><div className="hover:text-[#E74C3C] transition-colors cursor-pointer">Industrial Properties</div></li>
             </ul>
           </div>
           
