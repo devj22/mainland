@@ -1,596 +1,420 @@
 import { useState } from 'react';
-import { useLocation } from 'wouter';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage, 
-  FormDescription
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Search, Filter } from 'lucide-react';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger 
+} from '@/components/ui/accordion';
+import { 
+  Slider 
+} from '@/components/ui/slider';
+import {
+  Card,
+  CardContent
+} from '@/components/ui/card';
+import { 
+  Search, 
+  Home, 
+  DollarSign, 
+  Bed, 
+  Bath, 
+  Maximize,
+  Filter
+} from 'lucide-react';
 
-// Options for dropdown filters
-const locations = [
-  { value: "all", label: "All Locations" },
-  { value: "downtown", label: "Downtown" },
-  { value: "suburbs", label: "Suburbs" },
-  { value: "beachfront", label: "Beachfront" },
-  { value: "countryside", label: "Countryside" }
-];
-
-const propertyTypes = [
-  { value: "all", label: "All Types" },
-  { value: "apartment", label: "Apartment" },
-  { value: "house", label: "House" },
-  { value: "villa", label: "Villa" },
-  { value: "commercial", label: "Commercial" }
-];
-
-const statusOptions = [
-  { value: "all", label: "All Statuses" },
-  { value: "For Sale", label: "For Sale" },
-  { value: "For Rent", label: "For Rent" }
-];
-
-const sortOptions = [
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "newest", label: "Newest First" },
-  { value: "bedrooms", label: "Most Bedrooms" },
-  { value: "area", label: "Largest Area" }
-];
-
-// Amenities for checkbox filters
-const amenities = [
-  { id: "pool", label: "Swimming Pool" },
-  { id: "garage", label: "Garage" },
-  { id: "garden", label: "Garden" },
-  { id: "gym", label: "Gym" },
-  { id: "balcony", label: "Balcony" },
-  { id: "parking", label: "Parking" },
-  { id: "securitySystem", label: "Security System" },
-  { id: "airConditioning", label: "Air Conditioning" }
-];
-
-// Form schema with validation
 const searchFormSchema = z.object({
-  location: z.string(),
-  propertyType: z.string(),
-  status: z.string().default("all"),
-  minPrice: z.number().min(0).max(10000000).optional(),
-  maxPrice: z.number().min(0).max(10000000).optional(),
-  minBedrooms: z.number().min(0).max(10).optional(),
-  maxBedrooms: z.number().min(0).max(10).optional(),
-  minBathrooms: z.number().min(0).max(10).optional(),
-  maxBathrooms: z.number().min(0).max(10).optional(),
-  minArea: z.number().min(0).max(10000).optional(),
-  maxArea: z.number().min(0).max(10000).optional(),
-  amenities: z.record(z.boolean()).optional(),
-  sortBy: z.string().default("newest"),
+  location: z.string().optional(),
+  type: z.string().optional(),
+  status: z.string().optional(),
+  priceRange: z.array(z.number()).length(2).optional(),
+  bedroomsRange: z.array(z.number()).length(2).optional(),
+  bathroomsRange: z.array(z.number()).length(2).optional(),
+  areaRange: z.array(z.number()).length(2).optional(),
+  amenities: z.array(z.string()).optional(),
+  sortBy: z.string().optional()
 });
 
 type SearchFormValues = z.infer<typeof searchFormSchema>;
 
 const AdvancedSearchSection = () => {
-  const [, setLocation] = useLocation();
+  // Default values for price sliders
+  const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
+  const [bedroomsRange, setBedroomsRange] = useState<number[]>([0, 5]);
+  const [bathroomsRange, setBathroomsRange] = useState<number[]>([0, 5]);
+  const [areaRange, setAreaRange] = useState<number[]>([0, 5000]);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
-  
-  // Initialize form with default values
+
+  const amenitiesList = [
+    { id: 'pool', label: 'Swimming Pool' },
+    { id: 'garden', label: 'Garden' },
+    { id: 'garage', label: 'Garage' },
+    { id: 'balcony', label: 'Balcony' },
+    { id: 'airConditioning', label: 'Air Conditioning' },
+    { id: 'gym', label: 'Gym' },
+    { id: 'security', label: 'Security System' },
+    { id: 'parking', label: 'Parking' }
+  ];
+
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
-      location: "all",
-      propertyType: "all",
-      status: "all",
-      minPrice: 0,
-      maxPrice: 1000000,
-      minBedrooms: 0,
-      maxBedrooms: 10,
-      minBathrooms: 0,
-      maxBathrooms: 5,
-      minArea: 0,
-      maxArea: 5000,
-      amenities: amenities.reduce((acc, item) => ({ ...acc, [item.id]: false }), {}),
-      sortBy: "newest",
+      location: '',
+      type: '',
+      status: '',
+      priceRange: [0, 1000000],
+      bedroomsRange: [0, 5],
+      bathroomsRange: [0, 5],
+      areaRange: [0, 5000],
+      amenities: [],
+      sortBy: ''
     }
   });
-  
-  // Handle price slider change
-  const handlePriceChange = (value: number[]) => {
-    setPriceRange(value);
-    form.setValue("minPrice", value[0]);
-    form.setValue("maxPrice", value[1]);
-  };
-  
-  // Handle form submission
+
   const onSubmit = (values: SearchFormValues) => {
-    // Build query string from form values
+    // Construct query string
     const params = new URLSearchParams();
     
-    // Add basic filters
-    if (values.location && values.location !== 'all') params.append('location', values.location);
-    if (values.propertyType && values.propertyType !== 'all') params.append('type', values.propertyType);
-    if (values.status && values.status !== 'all') params.append('status', values.status);
-    
-    // Add price range
-    if (values.minPrice && values.minPrice > 0) params.append('minPrice', values.minPrice.toString());
-    if (values.maxPrice && values.maxPrice < 1000000) params.append('maxPrice', values.maxPrice.toString());
-    
-    // Add room counts
-    if (values.minBedrooms && values.minBedrooms > 0) params.append('minBedrooms', values.minBedrooms.toString());
-    if (values.maxBedrooms && values.maxBedrooms < 10) params.append('maxBedrooms', values.maxBedrooms.toString());
-    if (values.minBathrooms && values.minBathrooms > 0) params.append('minBathrooms', values.minBathrooms.toString());
-    if (values.maxBathrooms && values.maxBathrooms < 5) params.append('maxBathrooms', values.maxBathrooms.toString());
-    
-    // Add area range
-    if (values.minArea && values.minArea > 0) params.append('minArea', values.minArea.toString());
-    if (values.maxArea && values.maxArea < 5000) params.append('maxArea', values.maxArea.toString());
-    
-    // Add amenities
-    const selectedAmenities = Object.entries(values.amenities || {})
-      .filter(([_, value]) => value)
-      .map(([key]) => key);
-    
-    if (selectedAmenities.length > 0) {
-      params.append('amenities', selectedAmenities.join(','));
+    if (values.location) {
+      params.append('location', values.location);
     }
     
-    // Add sort option
-    if (values.sortBy) params.append('sortBy', values.sortBy);
+    if (values.type) {
+      params.append('type', values.type);
+    }
     
-    // Navigate to properties page with the constructed query params
-    setLocation(`/properties?${params.toString()}`);
-  };
-  
-  // Toggle advanced search section visibility
-  const toggleAdvancedSearch = () => {
-    setShowAdvanced(!showAdvanced);
+    if (values.status) {
+      params.append('status', values.status);
+    }
+    
+    if (values.priceRange) {
+      params.append('minPrice', values.priceRange[0].toString());
+      params.append('maxPrice', values.priceRange[1].toString());
+    }
+    
+    if (values.bedroomsRange) {
+      params.append('minBedrooms', values.bedroomsRange[0].toString());
+      params.append('maxBedrooms', values.bedroomsRange[1].toString());
+    }
+    
+    if (values.bathroomsRange) {
+      params.append('minBathrooms', values.bathroomsRange[0].toString());
+      params.append('maxBathrooms', values.bathroomsRange[1].toString());
+    }
+    
+    if (values.areaRange) {
+      params.append('minArea', values.areaRange[0].toString());
+      params.append('maxArea', values.areaRange[1].toString());
+    }
+    
+    if (values.amenities && values.amenities.length > 0) {
+      params.append('amenities', values.amenities.join(','));
+    }
+    
+    if (values.sortBy) {
+      params.append('sortBy', values.sortBy);
+    }
+    
+    // Redirect to the properties page with the search parameters
+    window.location.href = `/properties?${params.toString()}`;
   };
 
   return (
-    <section className="bg-white py-8 shadow-md relative z-20 -mt-16 rounded-t-3xl">
+    <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <Card className="border-0 shadow-lg">
+        <Card className="shadow-lg rounded-lg border-0">
           <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-[#2C3E50] mb-6 text-center">Find Your Perfect Property</h2>
-            
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="basic" className="text-sm">Basic Search</TabsTrigger>
-                <TabsTrigger value="advanced" className="text-sm">Advanced Search</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="basic">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Basic Search Form */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Locations" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {locations.map((location) => (
-                                  <SelectItem key={location.value} value={location.value}>
-                                    {location.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="propertyType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Property Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Types" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {propertyTypes.map((type) => (
-                                  <SelectItem key={type.value} value={type.value}>
-                                    {type.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Status</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Statuses" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {statusOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="flex items-end">
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[#3498DB] hover:bg-opacity-90 text-white py-3"
-                        >
-                          <Search className="mr-2 h-4 w-4" />
-                          Search
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Price Range Slider */}
-                    <div className="pt-4">
-                      <FormLabel className="block mb-2">Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}</FormLabel>
-                      <Slider
-                        defaultValue={[0, 1000000]}
-                        min={0}
-                        max={1000000}
-                        step={10000}
-                        value={priceRange}
-                        onValueChange={handlePriceChange}
-                        className="py-4"
-                      />
-                    </div>
-                  </form>
-                </Form>
-              </TabsContent>
-              
-              <TabsContent value="advanced">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Basic Filters - First Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Locations" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {locations.map((location) => (
-                                  <SelectItem key={location.value} value={location.value}>
-                                    {location.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="propertyType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Property Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Types" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {propertyTypes.map((type) => (
-                                  <SelectItem key={type.value} value={type.value}>
-                                    {type.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Status</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="All Statuses" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {statusOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    {/* Price Range Slider */}
-                    <div>
-                      <FormLabel className="block mb-2">Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}</FormLabel>
-                      <Slider
-                        defaultValue={[0, 1000000]}
-                        min={0}
-                        max={1000000}
-                        step={10000}
-                        value={priceRange}
-                        onValueChange={handlePriceChange}
-                        className="py-4"
-                      />
-                    </div>
-                    
-                    {/* Bedrooms & Bathrooms - Number inputs */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="minBedrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Min Bedrooms</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={10} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="maxBedrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Max Bedrooms</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={10} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 10)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="minBathrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Min Bathrooms</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={5} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="maxBathrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Max Bathrooms</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={5} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 5)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    {/* Area Range */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="minArea"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Min Area (sq ft)</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={10000} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="maxArea"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Max Area (sq ft)</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={0} 
-                                max={10000} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value) || 5000)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    {/* Amenities - Checkboxes */}
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Amenities</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {amenities.map((amenity) => (
-                          <FormField
-                            key={amenity.id}
-                            control={form.control}
-                            name={`amenities.${amenity.id}`}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-1">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  {amenity.label}
-                                </FormLabel>
-                              </FormItem>
-                            )}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Location Field */}
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Search className="h-4 w-4 mr-2 text-[#3498DB]" />
+                          Location
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter city, state or ZIP" 
+                            {...field}
+                            className="focus-visible:ring-[#3498DB]" 
                           />
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Sort By */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="sortBy"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Sort By</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Sort Properties" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {sortOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="flex items-end">
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[#3498DB] hover:bg-opacity-90 text-white py-3"
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Property Type Field */}
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Home className="h-4 w-4 mr-2 text-[#3498DB]" />
+                          Property Type
+                        </FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
                         >
-                          <Filter className="mr-2 h-4 w-4" />
-                          Apply Filters
-                        </Button>
+                          <FormControl>
+                            <SelectTrigger className="focus-visible:ring-[#3498DB]">
+                              <SelectValue placeholder="Select Type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="house">House</SelectItem>
+                            <SelectItem value="apartment">Apartment</SelectItem>
+                            <SelectItem value="condo">Condo</SelectItem>
+                            <SelectItem value="villa">Villa</SelectItem>
+                            <SelectItem value="land">Land</SelectItem>
+                            <SelectItem value="commercial">Commercial</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Status Field */}
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <DollarSign className="h-4 w-4 mr-2 text-[#3498DB]" />
+                          Status
+                        </FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="focus-visible:ring-[#3498DB]">
+                              <SelectValue placeholder="Select Status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="for-sale">For Sale</SelectItem>
+                            <SelectItem value="for-rent">For Rent</SelectItem>
+                            <SelectItem value="sold">Sold</SelectItem>
+                            <SelectItem value="leased">Leased</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Sort By Field */}
+                  <FormField
+                    control={form.control}
+                    name="sortBy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Filter className="h-4 w-4 mr-2 text-[#3498DB]" />
+                          Sort By
+                        </FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="focus-visible:ring-[#3498DB]">
+                              <SelectValue placeholder="Sort Results" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="latest">Newest First</SelectItem>
+                            <SelectItem value="price-high">Price (High to Low)</SelectItem>
+                            <SelectItem value="price-low">Price (Low to High)</SelectItem>
+                            <SelectItem value="area-high">Area (High to Low)</SelectItem>
+                            <SelectItem value="area-low">Area (Low to High)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <Accordion 
+                  type="single" 
+                  collapsible 
+                  className="w-full"
+                  value={showAdvanced ? "advanced" : ""}
+                  onValueChange={(value) => setShowAdvanced(value === "advanced")}
+                >
+                  <AccordionItem value="advanced" className="border-b-0">
+                    <AccordionTrigger className="text-[#3498DB] hover:no-underline py-2">
+                      Advanced Filters
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-6">
+                        {/* Price Range Slider */}
+                        <div className="space-y-2">
+                          <FormLabel className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-2 text-[#3498DB]" />
+                            Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
+                          </FormLabel>
+                          <Slider
+                            defaultValue={[0, 1000000]}
+                            min={0}
+                            max={1000000}
+                            step={10000}
+                            value={priceRange}
+                            onValueChange={(value) => {
+                              setPriceRange(value);
+                              form.setValue('priceRange', value);
+                            }}
+                            className="py-4"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          {/* Bedrooms Range Slider */}
+                          <div className="space-y-2">
+                            <FormLabel className="flex items-center">
+                              <Bed className="h-4 w-4 mr-2 text-[#3498DB]" />
+                              Bedrooms: {bedroomsRange[0]} - {bedroomsRange[1]}
+                            </FormLabel>
+                            <Slider
+                              defaultValue={[0, 5]}
+                              min={0}
+                              max={10}
+                              step={1}
+                              value={bedroomsRange}
+                              onValueChange={(value) => {
+                                setBedroomsRange(value);
+                                form.setValue('bedroomsRange', value);
+                              }}
+                              className="py-4"
+                            />
+                          </div>
+                          
+                          {/* Bathrooms Range Slider */}
+                          <div className="space-y-2">
+                            <FormLabel className="flex items-center">
+                              <Bath className="h-4 w-4 mr-2 text-[#3498DB]" />
+                              Bathrooms: {bathroomsRange[0]} - {bathroomsRange[1]}
+                            </FormLabel>
+                            <Slider
+                              defaultValue={[0, 5]}
+                              min={0}
+                              max={10}
+                              step={1}
+                              value={bathroomsRange}
+                              onValueChange={(value) => {
+                                setBathroomsRange(value);
+                                form.setValue('bathroomsRange', value);
+                              }}
+                              className="py-4"
+                            />
+                          </div>
+                          
+                          {/* Area Range Slider */}
+                          <div className="space-y-2">
+                            <FormLabel className="flex items-center">
+                              <Maximize className="h-4 w-4 mr-2 text-[#3498DB]" />
+                              Area (sq ft): {areaRange[0]} - {areaRange[1]}
+                            </FormLabel>
+                            <Slider
+                              defaultValue={[0, 5000]}
+                              min={0}
+                              max={10000}
+                              step={100}
+                              value={areaRange}
+                              onValueChange={(value) => {
+                                setAreaRange(value);
+                                form.setValue('areaRange', value);
+                              }}
+                              className="py-4"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Amenities Checkboxes */}
+                        <div className="space-y-2">
+                          <FormLabel>Amenities</FormLabel>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                            {amenitiesList.map((amenity) => (
+                              <FormField
+                                key={amenity.id}
+                                control={form.control}
+                                name="amenities"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(amenity.id)}
+                                        onCheckedChange={(checked) => {
+                                          const currentAmenities = field.value || [];
+                                          if (checked) {
+                                            // Add the amenity
+                                            field.onChange([...currentAmenities, amenity.id]);
+                                          } else {
+                                            // Remove the amenity
+                                            field.onChange(
+                                              currentAmenities.filter((value) => value !== amenity.id)
+                                            );
+                                          }
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm cursor-pointer">
+                                      {amenity.label}
+                                    </FormLabel>
+                                  </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </form>
-                </Form>
-              </TabsContent>
-            </Tabs>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                
+                <div className="flex justify-center">
+                  <Button
+                    type="submit"
+                    className="bg-[#3498DB] hover:bg-[#2980B9] text-white px-10"
+                  >
+                    Search Properties
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>
