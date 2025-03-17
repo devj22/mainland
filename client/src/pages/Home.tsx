@@ -2,6 +2,8 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import AboutUs from '@/components/AboutUs';
 import ContactSection from '@/components/ContactSection';
+import ParallaxSection from '@/components/ParallaxSection';
+import GoogleMapSection from '@/components/GoogleMapSection';
 import Footer from '@/components/Footer';
 import { Link } from 'wouter';
 import { useEffect, useState } from 'react';
@@ -130,6 +132,8 @@ const Home = () => {
       <FeaturesSection />
       <AboutUs />
       <GallerySection />
+      <GoogleMapSection />
+      <ParallaxSection />
       <ContactSection />
       <Footer />
     </div>
