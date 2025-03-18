@@ -11,7 +11,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Property routes
   app.get("/api/properties", async (req, res) => {
     const properties = await storage.getProperties();
-    res.json(properties);
+    res.json(properties); 
   });
   
   app.get("/api/properties/featured", async (req, res) => {

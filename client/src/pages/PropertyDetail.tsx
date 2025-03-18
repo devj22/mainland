@@ -283,6 +283,7 @@ const PropertyDetail = () => {
           </>
         )}
       </div>
+
       
       <Footer />
     </div>
